@@ -1,16 +1,13 @@
 import express from 'express'
-import { readFile, writeFile } from 'node:fs/promises'
+import { writeFile } from 'node:fs/promises'
 import crypto from 'node:crypto'
 import { valdiatePartialMovie, validateMovie } from './Schemas/movies.mjs'
 import cors from 'cors'
 
 // const movies = JSON.parse(fs.readFileSync('./movies.json, utf-8))
+import { readJSON } from './utils.mjs'
 
-import { createRequire } from 'node:module'
-
-const require = createRequire(import.meta.url)
-
-const movies = require('./movies.json')
+const movies = readJSON('./movies.json')
 
 const app = express()
 
@@ -44,8 +41,7 @@ const PORT = process.env.PORT ?? 1234
 app.get('/movies', async (req, res) => {
   try {
     const { genre } = req.query
-    //const moviesBuffer = await readFile('./movies.json')
-    //const movies = JSON.parse(moviesBuffer)
+
     if (genre) {
       const filteredMovies = movies.filter((movie) =>
         movie.genre.some((g) => g.toLowerCase() === genre.toLowerCase())
@@ -62,8 +58,7 @@ app.get('/movies', async (req, res) => {
 app.get('/movies/:id', async (req, res) => {
   try {
     const { id } = req.params
-    //const moviesBuffer = await readFile('./movies.json')
-    //const movies = JSON.parse(moviesBuffer)
+   
     const movie = movies.find((movie) => movie.id === id)
     if (movie) {
       res.json(movie)
@@ -82,8 +77,7 @@ app.post('/movies', async (req, res) => {
     return res.status(400).json({ error: JSON.parse(result.error.message) })
   }
 
-  //const moviesBuffer = await readFile('./movies.json')
-  //const movies = JSON.parse(moviesBuffer)
+ 
 
   const newMovie = {
     id: crypto.randomUUID(),
@@ -109,8 +103,7 @@ app.patch('/movies/:id', async (req, res) => {
   }
 
   const { id } = req.params
-  //const moviesBuffer = await readFile('./movies.json')
-  //const movies = JSON.parse(moviesBuffer)
+
   const movieIndex = movies.findIndex((movie) => movie.id === id)
 
   if (movieIndex === -1) {
@@ -130,8 +123,7 @@ app.patch('/movies/:id', async (req, res) => {
 
 app.delete('/movies/:id', async (req, res) => {
   const { id } = req.params
-  //const moviesBuffer = await readFile('./movies.json')
-  //const movies = JSON.parse(moviesBuffer)
+
   const movieIndex = movies.findIndex(movie => movie.id === id)
 
   if (movieIndex === -1) {
